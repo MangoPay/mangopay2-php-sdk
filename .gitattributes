@@ -8,4 +8,4 @@
 Makefile export-ignore
 /php_env export-ignore
 phpunit.xml export-ignore
-.php_cs export-ignore
+.php-cs-fixer.php export-ignore

@@ -8,7 +8,8 @@ namespace MangoPay;
 class UboDeclaration extends Libraries\EntityBase
 {
     /**
-     * @var int Unix timestamp, Date of process
+     * The Declaration process date.
+     * @var int Unix timestamp, Date of the process
      */
     public $ProcessedDate;
 
@@ -18,6 +19,12 @@ class UboDeclaration extends Libraries\EntityBase
      * @see \MangoPay\UboDeclarationStatus
      */
     public $Status;
+
+    /**
+     * The output status of Declaration status.
+     * @var string
+     */
+    public $OutputStatus;
 
     /**
      * List of reasons why the declaration was refused.

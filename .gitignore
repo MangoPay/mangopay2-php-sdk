@@ -11,6 +11,6 @@ composer.lock
 
 .*
 !.github
-!.php_cs
+!.php-cs-fixer.php
 !.gitignore
 !.gitattributes

@@ -10,13 +10,21 @@ class ApiUboDeclarations extends Libraries\ApiBase
     /**
      * Creates a new UBO Declaration for an user.
      * @param string $userId The ID of the user
-     * @return \MangoPay\UboDeclaration UBO Declaration object returned from API
+     * @return \MangoPay\UboDeclaration|array|object UBO Declaration object returned from API
      */
     public function Create($userId)
     {
         return $this->CreateObject('ubo_declaration_create', null, '\MangoPay\UboDeclaration', $userId);
     }
 
+    /**
+     * Gets all UBO Declarations for an user.
+     * @param string $userId The ID of the user
+     * @param \MangoPay\Pagination $pagination Pagination object
+     * @param \MangoPay\Sorting $sorting Sorting object
+     * @return \MangoPay\UboDeclaration[]|array List of UBO Declarations returned from API
+     * @throws \MangoPay\Libraries\Exception
+     */
     public function GetAll($userId, $pagination = null, $sorting = null)
     {
         return $this->GetList("ubo_declaration_all", $pagination, '\MangoPay\UboDeclaration', $userId, null, $sorting);
@@ -24,9 +32,10 @@ class ApiUboDeclarations extends Libraries\ApiBase
 
     /**
      * Gets an UBO Declaration.
-     * @param string $userId
-     * @param string $uboDeclarationId
-     * @return UboDeclaration UBO Declaration object returned from API
+     * @param string $userId The ID of the user
+     * @param string $uboDeclarationId UBO Declaration identifier
+     * @return UboDeclaration|array|object UBO Declaration object returned from API
+     * @throws \MangoPay\Libraries\Exception
      */
     public function Get($userId, $uboDeclarationId)
     {
@@ -35,8 +44,8 @@ class ApiUboDeclarations extends Libraries\ApiBase
 
     /**
      * Gets an UBO Declaration directly by Id.
-     * @param string $uboDeclarationId
-     * @return UboDeclaration UBO Declaration object returned from API
+     * @param string $uboDeclarationId UBO Declaration identifier
+     * @return UboDeclaration|array|object UBO Declaration object returned from API
      */
     public function GetById($uboDeclarationId)
     {
@@ -45,10 +54,11 @@ class ApiUboDeclarations extends Libraries\ApiBase
 
     /**
      * Creates a new UBO for the specified arguments
-     * @param string $userId int
-     * @param string $uboDeclarationId int
-     * @param Ubo $ubo
-     * @return Ubo UBO object returned from API
+     * @param string $userId The ID of the user
+     * @param string $uboDeclarationId The ID of the UBO declaration
+     * @param Ubo $ubo The UBO object to be created
+     * @return Ubo|array|object UBO object returned from API
+     * @throws \MangoPay\Libraries\ResponseException
      */
     public function CreateUbo($userId, $uboDeclarationId, $ubo)
     {
@@ -60,10 +70,10 @@ class ApiUboDeclarations extends Libraries\ApiBase
 
     /**
      * Updates an UBO
-     * @param string $userId
-     * @param string $uboDeclarationId
-     * @param Ubo $ubo
-     * @return Ubo UBO object returned from API
+     * @param string $userId The ID of the user
+     * @param string $uboDeclarationId The ID of the UBO declaration
+     * @param Ubo $ubo The UBO object to be updated
+     * @return Ubo|array|object UBO object returned from API
      */
     public function UpdateUbo($userId, $uboDeclarationId, $ubo)
     {
@@ -72,10 +82,11 @@ class ApiUboDeclarations extends Libraries\ApiBase
 
     /**
      * Gets an UBO
-     * @param string $userId
-     * @param string $uboDeclarationId
-     * @param string $uboId
-     * @return Ubo UBO object returned from API
+     * @param string $userId The ID of the user
+     * @param string $uboDeclarationId The ID of the UBO declaration
+     * @param string $uboId The ID of the UBO
+     * @return \MangoPay\Ubo|array|object UBO object returned from API
+     * @throws \MangoPay\Libraries\Exception
      */
     public function GetUbo($userId, $uboDeclarationId, $uboId)
     {
@@ -84,9 +95,9 @@ class ApiUboDeclarations extends Libraries\ApiBase
 
     /**
      * Updates an UBO Declaration with the status <code>VALIDATION_ASKED</code>.
-     * @param string $userId
-     * @param string $uboDeclarationId
-     * @return UboDeclaration
+     * @param string $userId The ID of the user
+     * @param string $uboDeclarationId The ID of the UBO declaration
+     * @return \MangoPay\UboDeclaration|array|object
      */
     public function SubmitForValidation($userId, $uboDeclarationId)
     {
@@ -98,8 +109,10 @@ class ApiUboDeclarations extends Libraries\ApiBase
 
     /**
      * Gets an UBO Declaration.
-     * @param string $uboDeclarationId
-     * @return UboDeclaration UBO Declaration object returned from API
+     * @param string $uboDeclarationId UBO Declaration identifier
+     * @return \MangoPay\UboDeclaration|array|object UBO Declaration object returned from API
+     * @throws \MangoPay\Libraries\Exception
+     * @throws \Exception
      */
     public function GetUboDeclarationById($uboDeclarationId)
     {

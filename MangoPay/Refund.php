@@ -38,6 +38,12 @@ class Refund extends Transaction
     public $RefundReason;
 
     /**
+     * Message related to the refund
+     * @var string
+     */
+    public $RefundReasonMessage;
+
+    /**
      * @var string
      */
     public $Reference;
