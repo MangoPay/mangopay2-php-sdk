@@ -389,8 +389,8 @@ class RestTool
             $error->Errors = $response->errors;
         }
 
-        if (is_array($error->Errors)) {
-            foreach ($error->Errors as $key => $val) {
+        if (is_array($error->Errors) || is_object($error->Errors)) {
+            foreach ((array)$error->Errors as $key => $val) {
                 $error->Message .= sprintf(' %s error: %s', $key, $val);
             }
         }
