@@ -99,7 +99,10 @@ class HttpCurl extends HttpBase
     {
         $result = curl_exec($this->_curlHandle);
         if ($result === false && curl_errno($this->_curlHandle) != 0) {
-            $this->logger->error("cURL error: " . curl_error($this->_curlHandle));
+            $this->logger->error('cURL error', [
+                'errno' => curl_errno($this->_curlHandle),
+                'error' => curl_error($this->_curlHandle)
+            ]);
             throw new Exception('cURL error: ' . curl_error($this->_curlHandle));
         }
 

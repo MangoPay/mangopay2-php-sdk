@@ -45,14 +45,15 @@ class RestTool
     }
 
     /**
-     * Request type for current request
-     * @var RequestType
+     * Request type for current request (HTTP method).
+     * One of \MangoPay\Libraries\RequestType constants
+     * @var string
      */
     private $_requestType;
 
     /**
      * Return HTTP request method
-     * @return RequestType
+     * @return string
      */
     public function GetRequestType()
     {
@@ -124,7 +125,7 @@ class RestTool
     /**
      * Call request to MangoPay API
      * @param string $urlMethod Type of method in REST API
-     * @param \MangoPay\Libraries\RequestType $requestType Type of request
+     * @param string $requestType Type of request (constant of \MangoPay\Libraries\RequestType)
      * @param array $requestData Data to send in request
      * @param string $idempotencyKey
      * @param \MangoPay\Pagination $pagination Pagination object
@@ -139,25 +140,23 @@ class RestTool
             && (strpos($urlMethod, 'KYC/documents') !== false || strpos($urlMethod, 'dispute-documents') !== false)) {
             $this->_requestData = "";
         }
-        $logClass = $this->_root->Config->LogClass;
-        $this->logger->debug("New request");
-        if ($this->_root->Config->DebugMode) {
-            $logClass::Debug('++++++++++++++++++++++ New request ++++++++++++++++++++++', '');
-        }
+
+        $this->debug('++++++++++++++++++++++ New request ++++++++++++++++++++++', '');
+
         $this->BuildRequest($urlMethod, $pagination, $additionalUrlParams, $idempotencyKey);
         $responseResult = $this->_root->getHttpClient()->Request($this);
-        $logClass = $this->_root->Config->LogClass;
-        $this->logger->debug('Response JSON : ' . print_r($responseResult->Body, true));
-        if ($this->_root->Config->DebugMode) {
-            $logClass::Debug('Response JSON', $responseResult->Body);
-        }
+        $this->debug('Response JSON', $responseResult->Body);
+
         // FIXME This can fail hard.
         $response = json_decode($responseResult->Body);
+        $this->debug('Response object', $response);
 
-        $this->logger->debug('Decoded object : ' . print_r($response, true));
-        if ($this->_root->Config->DebugMode) {
-            $logClass::Debug('Response object', $response);
-        }
+        $this->logger->info('Response received', [
+            'responseCode' => $responseResult->ResponseCode,
+            'headers' => $responseResult->Headers,
+            'body' => $response ?: $responseResult->Body,
+        ]);
+
         $this->CheckResponseCode($responseResult->ResponseCode, $response);
         $this->ReadResponseHeader($responseResult->Headers);
         if (!is_null($pagination)) {
@@ -179,36 +178,34 @@ class RestTool
         $urlTool = new UrlTool($this->_root);
         $restUrl = $urlTool->GetRestUrl($urlMethod, $this->_clientIdRequired, $pagination, $additionalUrlParams);
         $this->_requestUrl = $urlTool->GetFullUrl($restUrl);
-        $logClass = $this->_root->Config->LogClass;
-        $this->logger->debug('FullUrl : ' . $this->_requestUrl);
-        if ($this->_root->Config->DebugMode) {
-            $logClass::Debug('FullUrl', $this->_requestUrl);
-        }
+
+        $this->debug('FullUrl', $this->_requestUrl);
+        $this->debug('RequestType', $this->_requestType);
+
         if (!is_null($pagination)) {
             $this->_pagination = $pagination;
         }
-        $this->logger->debug('RequestType : ' . $this->_requestType);
-        if ($this->_root->Config->DebugMode) {
-            $logClass::Debug('RequestType', $this->_requestType);
-        }
+
         $httpHeaders = $this->GetHttpHeaders($idempotencyKey);
-        $this->logger->debug('HTTP Headers : ' . print_r($httpHeaders, true));
-        if ($this->_root->Config->DebugMode) {
-            $logClass::Debug('HTTP Headers', $httpHeaders);
-        }
+        $this->debug('HTTP Headers', $httpHeaders);
+
+        $this->logger->info('Building request', [
+            'urlMethod' => $urlMethod,
+            'fullUrl' => $this->_requestUrl,
+            'requestType' => $this->_requestType,
+            'headers' => $httpHeaders,
+            'requestData' => $this->_requestData,
+            'json' => in_array(self::$_JSON_HEADER, $httpHeaders, true),
+        ]);
+
         if (!is_null($this->_requestData)) {
-            $this->logger->debug('RequestData object :' . print_r($this->_requestData, true));
-            if ($this->_root->Config->DebugMode) {
-                $logClass::Debug('RequestData object', $this->_requestData);
-            }
+            $this->debug('RequestData object', $this->_requestData);
+
             // encode to json if needed
             if (in_array(self::$_JSON_HEADER, $httpHeaders)) {
                 if (!is_null($this->_requestData)) {
                     $this->_requestData = json_encode($this->_requestData);
-                    $this->logger->debug('RequestData JSON :' . print_r($this->_requestData, true));
-                    if ($this->_root->Config->DebugMode) {
-                        $logClass::Debug('RequestData JSON', $this->_requestData);
-                    }
+                    $this->debug('RequestData JSON', $this->_requestData);
                 }
             }
         }
@@ -220,12 +217,7 @@ class RestTool
      */
     private function ReadResponseHeader($headers)
     {
-        $logClass = $this->_root->Config->LogClass;
-
-        $this->logger->debug('Response headers :' . print_r($headers, true));
-        if ($this->_root->Config->DebugMode) {
-            $logClass::Debug('Response headers', print_r($headers, true));
-        }
+        $this->debug('Response headers', print_r($headers, true));
 
         $updatedRateLimits = null;
 
@@ -396,5 +388,22 @@ class RestTool
         }
 
         throw new ResponseException($this->_requestUrl, $responseCode, $error);
+    }
+
+    /**
+     * Prints debug message & context if debug mode is enabled.
+     *
+     * @param string $message
+     * @param mixed $data
+     * @return void
+     */
+    private function debug($message, $data = null)
+    {
+        if (!$this->_root->Config->DebugMode) {
+            return;
+        }
+
+        $logClass = $this->_root->Config->LogClass;
+        $logClass::Debug($message, $data);
     }
 }
