@@ -28,11 +28,22 @@ docker-test-php-70: ## Test on PHP 7.0
 	php-test-env:7.0 \
 	/bin/bash -c "composer update -no --no-progress --no-suggest && vendor/bin/phpunit tests"
 
-.PHONY: docker-test-php-80
-docker-test-php-80: ## Test on PHP 8.0
+.PHONY: docker-build-php-80
+docker-build-php-80:
 	docker build -t php-test-env:8.0 php_env/PHP_8.0
-	docker run -it -v "${PWD}":/usr/src/mangopay2-php-sdk \
+
+.PHONY: docker-test-php-80
+docker-test-php-80: docker-build-php-80 ## Test on PHP 8.0
+	docker run --rm -it -v "${PWD}":/usr/src/mangopay2-php-sdk \
 	-w /usr/src/mangopay2-php-sdk \
 	--user $(shell id -u):$(shell id -g) \
 	php-test-env:8.0 \
 	/bin/bash -c "composer update -no --no-progress --no-suggest --ignore-platform-reqs && vendor/bin/phpunit tests"
+
+.PHONY: docker-cs-fixer
+docker-cs-fixer: docker-build-php-80 ## Run php-cs-fixer on PHP 8.0
+	docker run --rm -it -v "${PWD}":/usr/src/mangopay2-php-sdk \
+	-w /usr/src/mangopay2-php-sdk \
+	--user $(shell id -u):$(shell id -g) \
+	php-test-env:8.0 \
+	/bin/bash -c "composer install && vendor/bin/php-cs-fixer fix"
