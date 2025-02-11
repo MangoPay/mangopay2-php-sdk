@@ -44,8 +44,6 @@ class HttpCurl extends HttpBase
         curl_setopt($this->_curlHandle, CURLOPT_CONNECTTIMEOUT, $this->GetCurlConnectionTimeout());
         curl_setopt($this->_curlHandle, CURLOPT_TIMEOUT, $this->GetCurlResponseTimeout());
 
-        curl_setopt($this->_curlHandle, CURLOPT_RETURNTRANSFER, true);
-
         if ($this->_root->Config->CertificatesFilePath == '') {
             curl_setopt($this->_curlHandle, CURLOPT_SSL_VERIFYPEER, false);
         } else {
