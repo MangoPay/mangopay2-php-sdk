@@ -28,7 +28,7 @@ class ResponseException extends Exception
 
     /**
      * Error details
-     * @var Error
+     * @var Error|null
      */
     private $_errorInfo;
 
@@ -47,7 +47,7 @@ class ResponseException extends Exception
     /**
      * Construct
      * @param int $code Response code
-     * @param Error $errorInfo Details with the error
+     * @param Error|null $errorInfo Details with the error
      */
     public function __construct($requestUrl, $code, $errorInfo = null)
     {
@@ -70,7 +70,7 @@ class ResponseException extends Exception
 
     /**
      * Get Error object returned by REST API
-     * @return Error
+     * @return Error|null
      */
     public function GetErrorDetails()
     {
